@@ -128,7 +128,7 @@
       document.getElementById('eventsContainer').innerHTML = '';
 
       // FIXED LINJE: Inkluderer nå ?sted= nøyaktig der den skal for å unngå CORS-feil på GitHub
-      var googleScriptUrl = "https://script.google.com/macros/s/AKfycbwLHj1jkirmyLSkdE3uVUP7pyUdZCzwPT67pg-5D8JAGjPnRsaIp4bklc63wI7io87o/exec" + valgtSted;
+      var googleScriptUrl = "https://script.google.com/macros/s/AKfycbwbwHb_aiUZPtvXHX7CZOajpZSldFdrsNTboQqaHkKthTgjJ9mRa6-2BlMaLcEDpAo/exec" + valgtSted;
 
       fetch(googleScriptUrl)
         .then(function(res) { return res.json(); })
