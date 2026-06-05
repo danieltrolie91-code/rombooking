@@ -121,14 +121,14 @@
     function fmtTid(d) { return new Date(d).toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit', hour12: false }); }
 
     window.onload = function() { startKlokke(); oppdaterAktivtStedIMeny(); oppdaterVisningAvQr(); lastData(); };
+    
     function lastData() {
       document.getElementById('status').style.display = 'block';
       document.getElementById('status').innerText = "Oppdaterer rombookinger for " + stedsNavn[valgtSted] + "...";
       document.getElementById('eventsContainer').innerHTML = '';
 
-      // !!! ERSTATT LENKEN UNDER MED URL-EN DU FIKK FRA GOOGLE I DEL 1 !!!
-var googleScriptUrl = "https://script.google.com/macros/s/AKfycbwyNv3G1vxMgHQPShBo3t3qM8i7eAIwbYK8SJlpohmGTNeZVyYojaEV0wcH3MMdxHs-/exec" + valgtSted;
-
+      // FIXED LINJE: Inkluderer nå ?sted= nøyaktig der den skal for å unngå CORS-feil på GitHub
+      var googleScriptUrl = "https://script.google.com/macros/s/AKfycbwLHj1jkirmyLSkdE3uVUP7pyUdZCzwPT67pg-5D8JAGjPnRsaIp4bklc63wI7io87o/exec" + valgtSted;
 
       fetch(googleScriptUrl)
         .then(function(res) { return res.json(); })
