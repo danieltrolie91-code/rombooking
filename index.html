@@ -127,7 +127,8 @@
       document.getElementById('eventsContainer').innerHTML = '';
 
       // !!! ERSTATT LENKEN UNDER MED URL-EN DU FIKK FRA GOOGLE I DEL 1 !!!
-      var googleScriptUrl = "https://script.google.com/macros/s/AKfycbyUoDDXkvQXevRYp-w9U4vgcFj6zHksMRe0_dO9oBlDJhmeMpl6gjlaIK68oP7GoJ7i/exec" + valgtSted;
+var googleScriptUrl = "https://script.google.com/macros/s/AKfycbwyNv3G1vxMgHQPShBo3t3qM8i7eAIwbYK8SJlpohmGTNeZVyYojaEV0wcH3MMdxHs-/exec" + valgtSted;
+
 
       fetch(googleScriptUrl)
         .then(function(res) { return res.json(); })
