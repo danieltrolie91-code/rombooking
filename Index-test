@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dagens Rombookinger</title>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: sans-serif; background: #f0f4f8; }
+    body { display: flex; justify-content: center; padding: 20px; box-sizing: border-box; }
+    .screen-wrapper { display: flex; flex-direction: row; width: 100%; max-width: 95vw; height: 100%; gap: 25px; align-items: center; justify-content: center; }
+    .container { flex-grow: 1; height: 100%; background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,40,85,0.05); box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(0,40,85,0.08); }
+    
+    .header-bar { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 16px 25px; flex-shrink: 0; border-bottom: 2px solid #e2e8f0; position: relative; }
+    .nav-btn { background: transparent; color: #002855; border: 2px solid #002855; font-size: clamp(0.8rem, 1.5vw, 1rem); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; user-select: none; }
+    .nav-btn:hover { background: #002855; color: white; }
+    
+    .dropdown-wrapper { position: relative; display: inline-block; }
+    .date-title { font-size: clamp(1.2rem, 2.3vw, 1.8rem); font-weight: 700; color: #002855; text-transform: capitalize; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px; padding: 5px 10px; border-radius: 8px; transition: background 0.2s; }
+    .date-title:hover { background: #e2e8f0; }
+    .menu-arrow { font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: #64748b; transition: transform 0.2s; }
+    .date-title.open .menu-arrow { transform: rotate(180deg); }
+    
+    .dropdown-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: white; min-width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; border: 1px solid #e2e8f0; z-index: 1000; padding: 6px 0; margin-top: 5px; }
+    .dropdown-menu.show { display: block; }
+    .dropdown-item { color: #0f172a; padding: 12px 20px; text-decoration: none; display: block; font-size: clamp(0.9rem, 1.8vw, 1.1rem); font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .dropdown-item:hover { background: #f1f5f9; color: #002855; }
+    .dropdown-item.active { background: #e6edf5; color: #002855; }
+
+    .clock-text { font-weight: 500; font-size: clamp(1.3rem, 2.5vw, 1.8rem); color: #002855; margin-right: 15px; }
+    .main-content-layout { display: flex; flex-direction: row; flex-grow: 1; height: 100%; overflow: hidden; gap: 20px; align-items: stretch; }
+    
+    .scroll-wrapper { flex-grow: 1; overflow-y: auto; padding: 25px; padding-right: 20px; box-sizing: border-box; }
+    .scroll-wrapper::-webkit-scrollbar { display: none; }
+    .time-row-container { display: flex; flex-direction: column; gap: 18px; padding-bottom: 40px; }
+    .time-row { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 18px; }
+    
+    .time-label { font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: #002855; font-weight: 800; background: #e6edf5; padding: 10px 16px; border-radius: 8px; flex-shrink: 0; min-width: clamp(70px, 12vw, 90px); text-align: center; border: 1px solid #e2e8f0; }
+    .cards-wrapper { display: flex; flex-wrap: wrap; gap: 12px; flex-grow: 1; }
+    
+    .event-card { background: #ffffff; padding: 16px 22px; border-radius: 10px; border: 1px solid #e2e8f0; border-left: 6px solid #002855; box-shadow: 0 2px 5px rgba(0,0,0,0.02); box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 240px; max-width: 100%; }
+    .event-card.kommune-card { border-left-color: #94a3b8; background: #f8fafc; }
+    .card-duration { font-size: clamp(0.75rem, 1.4vw, 0.95rem); color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .title { font-size: clamp(1.05rem, 2.2vw, 1.35rem); font-weight: 700; color: #0f172a; line-height: 1.4; }
+    .title span.room { color: #002855; font-weight: 600; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 2px 8px; border-radius: 4px; font-size: clamp(0.9rem, 1.8vw, 1.15rem); margin-left: 6px; display: inline-block; }
+    
+    .status-msg { text-align: center; color: #64748b; font-size: clamp(1rem, 2vw, 1.2rem); margin: 50px 0; font-weight: 600; }
+    .qr-side-column { display: flex; flex-direction: column; justify-content: center; align-items: center; width: clamp(90px, 12vw, 120px); flex-shrink: 0; text-align: center; gap: 12px; }
+    .qr-text { font-size: clamp(0.75rem, 1.4vw, 0.9rem); font-weight: 700; color: #002855; line-height: 1.4; }
+    .qr-box-img { padding: 8px; background: white; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px rgba(0,40,85,0.08); border-radius: 12px; width: 100%; height: auto; max-width: 100px; max-height: 100px; box-sizing: border-box; display: block; }
+    
+    .studiested-qr { display: none; width: 100%; }
+    .studiested-qr.aktiv-qr { display: block; }
+    @media (max-width: 1250px) { .qr-side-column { display: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="screen-wrapper">
+    <div class="qr-side-column">
+      <img id="mobilQr" class="qr-box-img" src="" alt="Mobil QR">
+      <div class="qr-text">Åpne på<br>mobilen</div>
+    </div>
+    <div class="container">
+      <div class="header-bar">
+        <div style="flex: 1; display: flex; justify-content: flex-start;">
+          <button class="nav-btn" id="prevDay">◀ Forrige</button>
+        </div>
+        
+        <div style="display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 15px; position: relative; z-index: 100;">
+          <span id="clockDisplay" class="clock-text">00:00</span>
+          <div class="dropdown-wrapper" style="position: relative;">
+            <div class="date-title" id="menuToggle" style="white-space: nowrap;">
+              <span id="dateDisplay">Laster dato...</span>
+              <span class="menu-arrow">▼</span>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu" style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%);">
+              <div class="dropdown-item" data-code="MO">Mo i Rana</div>
+              <div class="dropdown-item" data-code="NES">Nesna</div>
+              <div class="dropdown-item" data-code="BOD">Bodø</div>
+              <div class="dropdown-item" data-code="LEV">Levanger</div>
+              <div class="dropdown-item" data-code="NAM">Namsos</div>
+              <div class="dropdown-item" data-code="STE">Steinkjer</div>
+              <div class="dropdown-item" data-code="STJ">Stjørdal</div>
+              <div class="dropdown-item" data-code="VES">Vesterålen</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex: 1; display: flex; gap: 12px; align-items: center; justify-content: flex-end;">
+          <button class="nav-btn" id="toggleFilter">🔍 Utvidet</button>
+          <button class="nav-btn" id="nextDay">Neste ▶</button>
+        </div>
+      </div>
+      <div id="status" class="status-msg">Oppdaterer rombookinger...</div>
+      
+      <div class="main-content-layout">
+        <div class="scroll-wrapper" id="scrollArea">
+          <div id="eventsContainer" class="time-row-container"></div>
+        </div>
+      </div>
+    </div>
+    <div class="qr-side-column">
+      <img id="mazemapQr" class="qr-box-img" src="" alt="MazeMap QR">
+      <div class="qr-text">Finn frem<br>MazeMap</div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://google.com";
+
+    var stedsNavn = { MO: "Mo i Rana", NES: "Nesna", BOD: "Bodø", LEV: "Levanger", NAM: "Namsos", STE: "Steinkjer", STJ: "Stjørdal", VES: "Vesterålen" };
+    
+    var mobilBilder = { MO: "mobil-qr.png", NES: "mobil-qr.png", BOD: "mobil-qr.png", LEV: "mobil-qr.png", NAM: "mobil-qr.png", STE: "mobil-qr.png", STJ: "mobil-qr.png", VES: "mobil-qr.png" };
+    var mazemapBilder = { MO: "mazemap-qr.png", NES: "mazemap-qr.png", BOD: "mazemap-qr.png", LEV: "mazemap-qr.png", NAM: "mazemap-qr.png", STE: "mazemap-qr.png", STJ: "mazemap-qr.png", VES: "mazemap-qr.png" };
+
+    var valgtSted = 'MO';
+    var allEvents = [], visningsDato = new Date(), scrollInterval = null, visKommune = false;
+    
+    function fmtTid(d) { return new Date(d).toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit', hour12: false }); }
+    
+    window.onload = function() {
+      var urlParams = new URLSearchParams(window.location.search);
+      var urlSted = urlParams.get('sted');
+      
+      if (urlSted && stedsNavn[urlSted.toUpperCase()]) {
+        valgtSted = urlSted.toUpperCase();
+        localStorage.setItem('valgtStudiested', valgtSted);
+      } else {
+        valgtSted = localStorage.getItem('valgtStudiested') || 'MO';
+      }
+
+      startKlokke(); 
+      oppdaterAktivtStedIMeny(); 
+      oppdaterVisningAvQr(); 
+      lastData(); 
+    };
+    
+    function lastData() {
+      document.getElementById('status').style.display = 'block';
+      document.getElementById('status').innerText = "Oppdaterer rombookinger for " + stedsNavn[valgtSted] + "...";
+      document.getElementById('eventsContainer').innerHTML = '';
+      
+      var gammeltSkript = document.getElementById('jsonpScript');
+      if (gammeltSkript) { gammeltSkript.remove(); }
+      
+      var script = document.createElement('script');
+      script.id = 'jsonpScript';
+      script.src = API_URL + (API_URL.indexOf('?') >= 0 ? '&' : '?') + 'sted=' + valgtSted + '&callback=mottaDataFraGoogle';
+      script.onerror = function() { document.getElementById('status').innerText = "Kunne ikke hente data. Prøver igjen..."; };
+      document.body.appendChild(script);
+    }
+    window.mottaDataFraGoogle = function(events) {
+      document.getElementById('status').style.display = 'none';
+      allEvents = events || [];
+      renderDay();
+    };
+
+    function startKlokke() {
+      var oppdater = function() { document.getElementById('clockDisplay').innerText = fmtTid(new Date()); };
+      oppdater(); setInterval(oppdater, 1000);
+    }
+
+    var menuToggle = document.getElementById('menuToggle'); 
+    var dropdownMenu = document.getElementById('dropdownMenu');
+    
+    menuToggle.addEventListener('click', function(e) { 
+      e.stopPropagation(); 
+      menuToggle.classList.toggle('open'); 
+      dropdownMenu.classList.toggle('show'); 
+    });
+
+    document.addEventListener('click', function() { 
+      menuToggle.classList.remove('open'); 
+      dropdownMenu.classList.remove('show'); 
+    });
+
+    var items = document.querySelectorAll('.dropdown-item');
+    for (var i = 0; i < items.length; i++) {
+      items[i].addEventListener('click', function() {
+        valgtSted = this.getAttribute('data-code'); 
+        localStorage.setItem('valgtStudiested', valgtSted);
+        
+        if (window.history.pushState) {
+          var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+          window.history.pushState({path:newurl}, '', newurl);
+        }
+
+        oppdaterAktivtStedIMeny(); 
+        oppdaterVisningAvQr(); 
+        lastData();
+      });
+    }
+
+    function oppdaterAktivtStedIMeny() {
+      var items = document.querySelectorAll('.dropdown-item');
+      for (var i = 0; i < items.length; i++) {
+        if(items[i].getAttribute('data-code') === valgtSted) { 
+          items[i].classList.add('active'); 
+        } else { 
+          items[i].classList.remove('active'); 
+        }
+      }
+    }
+
+    var filterBtn = document.getElementById('toggleFilter');
+    if (filterBtn) {
+      filterBtn.addEventListener('click', function() {
+        visKommune = !visKommune;
+        if (visKommune) { this.innerText = "📋 Enkel"; this.style.borderColor = "#00A3A6"; this.style.color = "#00A3A6"; } 
+        else { this.innerText = "🔍 Utvidet"; this.style.borderColor = "#002855"; this.style.color = "#002855"; }
+        renderDay();
+      });
+    }
+
+    document.getElementById('prevDay').addEventListener('click', function() { changeDate(-1); });
+    document.getElementById('nextDay').addEventListener('click', function() { changeDate(1); });
+    function changeDate(days) { visningsDato.setDate(visningsDato.getDate() + days); renderDay(); }
+
+    function oppdaterVisningAvQr() {
+      if (document.getElementById('mazemapQr') && mazemapBilder[valgtSted]) { document.getElementById('mazemapQr').src = mazemapBilder[valgtSted]; }
+      if (document.getElementById('mobilQr') && mobilBilder[valgtSted]) { document.getElementById('mobilQr').src = mobilBilder[valgtSted]; }
+    }
+
+    function renderDay() {
+      var container = document.getElementById('eventsContainer'); container.innerHTML = ''; if (scrollInterval) clearInterval(scrollInterval);
+      var datoTekst = visningsDato.toLocaleDateString('no-NO', { weekday: 'long', month: 'short', day: 'numeric' });
+      document.getElementById('dateDisplay').innerText = datoTekst + " - " + stedsNavn[valgtSted];
+      var targetYear = visningsDato.getFullYear(), targetMonth = visningsDato.getMonth(), targetDate = visningsDato.getDate();
+      var dagensAvtaler = allEvents.filter(function(ev) {
+        var d = new Date(ev.start); return d.getFullYear() === targetYear && d.getMonth() === targetMonth && d.getDate() === targetDate;
+      });
+      if (!visKommune) { dagensAvtaler = dagensAvtaler.filter(function(ev) { return !ev.isKommune; }); }
+      dagensAvtaler.sort(function(a, b) { return a.start - b.start; });
+      if (dagensAvtaler.length === 0) { container.innerHTML = '<div class="status-msg">Ingen registrerte bookinger på denne datoen.</div>'; return; }
+      var grupperteAvtaler = {};
+      dagensAvtaler.forEach(function(ev) {
+        var startStr = "Kl. " + fmtTid(ev.start); if (!grupperteAvtaler[startStr]) { grupperteAvtaler[startStr] = []; } grupperteAvtaler[startStr].push(ev);
+      });
+      Object.keys(grupperteAvtaler).forEach(function(startTid) {
+        var avtalerILøkke = grupperteAvtaler[startTid], radElement = document.createElement('div'); radElement.className = 'time-row';
+        var tidsMerkelapp = document.createElement('div'); tidsMerkelapp.className = 'time-label'; tidsMerkelapp.innerText = startTid; radElement.appendChild(tidsMerkelapp);
+        var kortInnpakning = document.createElement('div'); kortInnpakning.className = 'cards-wrapper';
+        avtalerILøkke.forEach(function(ev) {
+          var kort = document.createElement('div'); kort.className = ev.isKommune ? 'event-card kommune-card' : 'event-card'; var txt = ev.title;
+          if (txt.includes("(") && txt.endsWith(")")) {
+            var idx = txt.lastIndexOf("("), rm = txt.substring(idx + 1, txt.length - 1), clean = txt.substring(0, idx).trim();
+            txt = clean + '<span class="room">' + rm + '</span>';
+          }
+          kort.innerHTML = '<div class="card-duration">Varighet til kl. ' + fmtTid(ev.end) + '</div><div class="title">' + txt + '</div>';
+          kortInnpakning.appendChild(kort);
+        });
+        radElement.appendChild(kortInnpakning); container.appendChild(radElement);
+      });
+      startAutoscroll();
+    }
+    
+    function startAutoscroll() {
+      var felt = document.getElementById('scrollArea'); var container = document.getElementById('eventsContainer');
+      if (!felt || !container) return; felt.scrollTop = 0;
+      setTimeout(function() {
+        scrollInterval = setInterval(function() {
+          var maksRulling = container.offsetHeight - felt.clientHeight; if (maksRulling <= 0) { clearInterval(scrollInterval); return; }
+          felt.scrollTop += 1;
+          if (felt.scrollTop >= maksRulling) { clearInterval(scrollInterval); setTimeout(function() { startAutoscroll(); }, 4000); }
+        }, 40);
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
