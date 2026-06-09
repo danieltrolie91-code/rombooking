@@ -111,27 +111,30 @@
 
     var stedsNavn = { MO: "Mo i Rana", NES: "Nesna", BOD: "Bodø", LEV: "Levanger", NAM: "Namsos", STE: "Steinkjer", STJ: "Stjørdal", VES: "Vesterålen" };
     
+// Definerer én felles QR-kodelenke for mobilvisningen som gjelder for alle studiesteder
     var mobilBilder = {
-      MO: "data:image/png;base64,LIM_INN_BASE64_FOR_MOBIL_MO_HER",
-      NES: "data:image/png;base64,LIM_INN_BASE64_FOR_MOBIL_NES_HER",
-      BOD: "data:image/png;base64,LIM_INN_BASE64_FOR_MOBIL_BOD_HER",
-      LEV: "data:image/png;base64,LIM_INN_BASE64_FOR_MOBIL_LEV_HER",
-      NAM: "data:image/png;base64,LIM_INN_BASE64_FOR_MOBIL_NAM_HER",
-      STE: "data:image/png;base64,LIM_INN_BASE64_FOR_MOBIL_STE_HER",
-      STJ: "data:image/png;base64,LIM_INN_BASE64_FOR_MOBIL_STJ_HER",
-      VES: "data:image/png;base64,LIM_INN_BASE64_FOR_MOBIL_VES_HER"
+      MO: "mobil-qr.png",
+      NES: "mobil-qr.png",
+      BOD: "mobil-qr.png",
+      LEV: "mobil-qr.png",
+      NAM: "mobil-qr.png",
+      STE: "mobil-qr.png",
+      STJ: "mobil-qr.png",
+      VES: "mobil-qr.png"
     };
 
+    // Definerer én felles QR-kodelenke for MazeMap som gjelder for alle studiesteder
     var mazemapBilder = {
-      MO: "data:image/png;base64,LIM_INN_BASE64_FOR_MAZEMAP_MO_HER",
-      NES: "data:image/png;base64,LIM_INN_BASE64_FOR_MAZEMAP_NES_HER",
-      BOD: "data:image/png;base64,LIM_INN_BASE64_FOR_MAZEMAP_BOD_HER",
-      LEV: "data:image/png;base64,LIM_INN_BASE64_FOR_MAZEMAP_LEV_HER",
-      NAM: "data:image/png;base64,LIM_INN_BASE64_FOR_MAZEMAP_NAM_HER",
-      STE: "data:image/png;base64,LIM_INN_BASE64_FOR_MAZEMAP_STE_HER",
-      STJ: "data:image/png;base64,LIM_INN_BASE64_FOR_MAZEMAP_STJ_HER",
-      VES: "data:image/png;base64,LIM_INN_BASE64_FOR_MAZEMAP_VES_HER"
+      MO: "mazemap-qr.png",
+      NES: "mazemap-qr.png",
+      BOD: "mazemap-qr.png",
+      LEV: "mazemap-qr.png",
+      NAM: "mazemap-qr.png",
+      STE: "mazemap-qr.png",
+      STJ: "mazemap-qr.png",
+      VES: "mazemap-qr.png"
     };
+
 
     var urlParams = new URLSearchParams(window.location.search);
     var urlSted = urlParams.get('sted');
