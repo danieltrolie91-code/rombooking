@@ -5,51 +5,89 @@
   <title>Dagens Rombookinger</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: sans-serif; background: #f0f4f8; }
-    body { display: flex; justify-content: center; padding: 20px; box-sizing: border-box; }
-    .screen-wrapper { display: flex; flex-direction: row; width: 100%; max-width: 95vw; height: 100%; gap: 25px; align-items: center; justify-content: center; }
+    body { display: flex; justify-content: center; padding: clamp(4px, 1.2vw, 20px); box-sizing: border-box; }
+    .screen-wrapper { display: flex; flex-direction: row; width: 100%; max-width: 98vw; height: 100%; gap: clamp(8px, 1.8vw, 25px); align-items: center; justify-content: center; }
     .container { flex-grow: 1; height: 100%; background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,40,85,0.05); box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(0,40,85,0.08); }
 
-    .header-bar { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 16px 25px; flex-shrink: 0; border-bottom: 2px solid #e2e8f0; position: relative; }
-    .nav-btn { background: transparent; color: #002855; border: 2px solid #002855; font-size: clamp(0.8rem, 1.5vw, 1rem); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; user-select: none; }
+    .header-bar { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: clamp(6px, 1vw, 16px) clamp(8px, 1.8vw, 25px); flex-shrink: 0; border-bottom: 2px solid #e2e8f0; position: relative; }
+
+    .nav-btn {
+      background: transparent;
+      color: #002855;
+      border: 2px solid #002855;
+      font-size: clamp(0.7rem, 1.1vw, 0.95rem);
+      padding: 6px clamp(8px, 1.2vw, 16px);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      white-space: nowrap;
+    }
     .nav-btn:hover { background: #002855; color: white; }
 
+      .btn-icon {
+      display: inline-block;
+
+      /* NYTT: Justerer høyden slik at pilen/ikonet ligger på linje med teksten */
+      vertical-align: middle;
+      position: relative;
+      top: -1px; /* Finjustering hvis pilen trengs å dyttes et ørlite hakk opp */
+    }
+    .btn-icon.left { margin-right: 4px; }
+    .btn-icon.right { margin-left: 4px; }
+
     .dropdown-wrapper { position: relative; display: inline-block; }
-    .date-title { font-size: clamp(1.2rem, 2.3vw, 1.8rem); font-weight: 700; color: #002855; text-transform: capitalize; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 10px; padding: 5px 10px; border-radius: 8px; transition: background 0.2s; }
+    .date-title { font-size: clamp(0.9rem, 1.8vw, 1.6rem); font-weight: 700; color: #002855; text-transform: capitalize; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 6px; padding: 4px 6px; border-radius: 8px; transition: background 0.2s; }
     .date-title:hover { background: #e2e8f0; }
-    .menu-arrow { font-size: clamp(0.9rem, 1.5vw, 1.1rem); color: #64748b; transition: transform 0.2s; }
+    .menu-arrow { font-size: clamp(0.7rem, 1.1vw, 1rem); color: #64748b; transition: transform 0.2s; }
     .date-title.open .menu-arrow { transform: rotate(180deg); }
 
-    .dropdown-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: white; min-width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; border: 1px solid #e2e8f0; z-index: 1000; padding: 6px 0; margin-top: 5px; }
+    .dropdown-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: white; min-width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; border: 1px solid #e2e8f0; z-index: 1000; padding: 6px 0; margin-top: 5px; }
     .dropdown-menu.show { display: block; }
-    .dropdown-item { color: #0f172a; padding: 12px 20px; text-decoration: none; display: block; font-size: clamp(0.9rem, 1.8vw, 1.1rem); font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .dropdown-item { color: #0f172a; padding: 10px 16px; text-decoration: none; display: block; font-size: clamp(0.85rem, 1.5vw, 1rem); font-weight: 600; cursor: pointer; transition: background 0.15s; }
     .dropdown-item:hover { background: #f1f5f9; color: #002855; }
     .dropdown-item.active { background: #e6edf5; color: #002855; }
 
-    .clock-text { font-weight: 500; font-size: clamp(1.3rem, 2.5vw, 1.8rem); color: #002855; margin-right: 15px; }
+    .clock-text { font-weight: 500; font-size: clamp(1rem, 2vw, 1.6rem); color: #002855; margin-right: clamp(6px, 1.2vw, 15px); }
     .main-content-layout { display: flex; flex-direction: row; flex-grow: 1; height: 100%; overflow: hidden; gap: 20px; align-items: stretch; }
 
-    .scroll-wrapper { flex-grow: 1; overflow-y: auto; padding: 25px; padding-right: 20px; box-sizing: border-box; }
+    .scroll-wrapper { flex-grow: 1; overflow-y: auto; padding: clamp(10px, 1.8vw, 25px); padding-right: clamp(8px, 1.5vw, 20px); box-sizing: border-box; }
     .scroll-wrapper::-webkit-scrollbar { display: none; }
-    .time-row-container { display: flex; flex-direction: column; gap: 18px; padding-bottom: 40px; }
-    .time-row { display: flex; flex-direction: row; align-items: flex-start; gap: 20px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 18px; }
+    .time-row-container { display: flex; flex-direction: column; gap: clamp(8px, 1.2vw, 18px); padding-bottom: 40px; }
+    .time-row { display: flex; flex-direction: row; align-items: flex-start; gap: clamp(8px, 1.5vw, 20px); border-bottom: 1px dashed #e2e8f0; padding-bottom: clamp(8px, 1.2vw, 18px); }
 
-    .time-label { font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: #002855; font-weight: 800; background: #e6edf5; padding: 10px 16px; border-radius: 8px; flex-shrink: 0; min-width: clamp(70px, 12vw, 90px); text-align: center; border: 1px solid #e2e8f0; }
-    .cards-wrapper { display: flex; flex-wrap: wrap; gap: 12px; flex-grow: 1; }
+    .time-label { font-size: clamp(0.7rem, 1.3vw, 1rem); color: #002855; font-weight: 800; background: #e6edf5; padding: 4px clamp(8px, 1.2vw, 16px); border-radius: 8px; flex-shrink: 0; min-width: clamp(55px, 8vw, 90px); text-align: center; border: 1px solid #e2e8f0; }
+    .cards-wrapper { display: flex; flex-wrap: wrap; gap: clamp(6px, 1vw, 12px); flex-grow: 1; }
 
-    .event-card { background: #ffffff; padding: 16px 22px; border-radius: 10px; border: 1px solid #e2e8f0; border-left: 6px solid #002855; box-shadow: 0 2px 5px rgba(0,0,0,0.02); box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 240px; max-width: 100%; }
+    .event-card { background: #ffffff; padding: clamp(8px, 1.2vw, 16px) clamp(10px, 1.5vw, 22px); border-radius: 10px; border: 1px solid #e2e8f0; border-left: 6px solid #002855; box-shadow: 0 2px 5px rgba(0,0,0,0.02); box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 160px; max-width: 100%; }
     .event-card.kommune-card { border-left-color: #94a3b8; background: #f8fafc; }
-    .card-duration { font-size: clamp(0.75rem, 1.4vw, 0.95rem); color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-    .title { font-size: clamp(1.05rem, 2.2vw, 1.35rem); font-weight: 700; color: #0f172a; line-height: 1.4; }
-    .title span.room { color: #002855; font-weight: 600; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 2px 8px; border-radius: 4px; font-size: clamp(0.9rem, 1.8vw, 1.15rem); margin-left: 6px; display: inline-block; }
+    .card-duration { font-size: clamp(0.6rem, 1vw, 0.85rem); color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .status-msg { text-align: center; color: #64748b; font-size: clamp(1rem, 2vw, 1.2rem); margin: 50px 0; font-weight: 600; }
-    .qr-side-column { display: flex; flex-direction: column; justify-content: center; align-items: center; width: clamp(90px, 12vw, 120px); flex-shrink: 0; text-align: center; gap: 12px; }
-    .qr-text { font-size: clamp(0.75rem, 1.4vw, 0.9rem); font-weight: 700; color: #002855; line-height: 1.4; }
-    .qr-box-img { padding: 8px; background: white; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px rgba(0,40,85,0.08); border-radius: 12px; width: 100%; height: auto; max-width: 100px; max-height: 100px; box-sizing: border-box; display: block; }
+    .title { font-size: clamp(0.75rem, 1.5vw, 1.25rem); font-weight: 700; color: #0f172a; line-height: 1.2; }
+    .title span.room { color: #002855; font-weight: 600; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 1px 4px; border-radius: 4px; font-size: clamp(0.7rem, 1.3vw, 1.05rem); margin-left: 4px; display: inline-block; }
 
-    .studiested-qr { display: none; width: 100%; }
-    .studiested-qr.aktiv-qr { display: block; }
-    @media (max-width: 1250px) { .qr-side-column { display: none !important; } }
+    .status-msg { text-align: center; color: #64748b; font-size: clamp(0.85rem, 1.5vw, 1.1rem); margin: 40px 0; font-weight: 600; }
+    .qr-side-column { display: flex; flex-direction: column; justify-content: center; align-items: center; width: clamp(75px, 8vw, 120px); flex-shrink: 0; text-align: center; gap: 8px; }
+    .qr-text { font-size: clamp(0.65rem, 1vw, 0.85rem); font-weight: 700; color: #002855; line-height: 1.2; }
+    .qr-box-img { padding: 4px; background: white; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px rgba(0,40,85,0.08); border-radius: 12px; width: 100%; height: auto; max-width: 80px; max-height: 80px; box-sizing: border-box; display: block; }
+
+    @media (max-width: 1250px) {
+      .qr-side-column { display: none !important; }
+    }
+    @media (max-width: 800px) {
+      #toggleFilter { display: none !important; }
+      .btn-icon { display: none !important; }
+    }
+    @media (max-width: 768px) {
+      body { padding: 4px; }
+      .time-row { flex-direction: column; gap: 6px; align-items: stretch; }
+      .time-label { align-self: flex-start; min-width: auto; }
+    }
   </style>
 </head>
 <body>
@@ -61,7 +99,7 @@
     <div class="container">
       <div class="header-bar">
         <div style="flex: 1; display: flex; justify-content: flex-start;">
-          <button class="nav-btn" id="prevDay">◀ Forrige</button>
+          <button class="nav-btn" id="prevDay"><span class="btn-icon left">◀</span> Forrige</button>
         </div>
 
         <div style="display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 15px; position: relative; z-index: 100;">
@@ -83,9 +121,10 @@
             </div>
           </div>
         </div>
+
         <div style="flex: 1; display: flex; gap: 12px; align-items: center; justify-content: flex-end;">
-          <button class="nav-btn" id="toggleFilter">🔍 Utvidet</button>
-          <button class="nav-btn" id="nextDay">Neste ▶</button>
+          <button class="nav-btn" id="toggleFilter"><span id="filterIcon" class="btn-icon left">🔍</span> <span id="filterText">Utvidet</span></button>
+          <button class="nav-btn" id="nextDay">Neste <span class="btn-icon right">▶</span></button>
         </div>
       </div>
       <div id="status" class="status-msg">Oppdaterer rombookinger...</div>
@@ -131,12 +170,10 @@
       oppdaterVisningAvQr();
       lastData();
 
-      // Henter ferske data ved å laste siden på nytt hvert 30. minutt
       setInterval(function() {
         location.reload();
       }, 1800000);
     };
-
 
     function lastData() {
       document.getElementById('status').style.display = 'block';
@@ -209,8 +246,21 @@
     if (filterBtn) {
       filterBtn.addEventListener('click', function() {
         visKommune = !visKommune;
-        if (visKommune) { this.innerText = "📋 Enkel"; this.style.borderColor = "#00A3A6"; this.style.color = "#00A3A6"; }
-        else { this.innerText = "🔍 Utvidet"; this.style.borderColor = "#002855"; this.style.color = "#002855"; }
+        var iconSpan = document.getElementById('filterIcon');
+        var textSpan = document.getElementById('filterText');
+
+        if (visKommune) {
+          if(iconSpan) iconSpan.innerText = "📋";
+          if(textSpan) textSpan.innerText = "Enkel";
+          this.style.borderColor = "#00A3A6";
+          this.style.color = "#00A3A6";
+        }
+        else {
+          if(iconSpan) iconSpan.innerText = "🔍";
+          if(textSpan) textSpan.innerText = "Utvidet";
+          this.style.borderColor = "#002855";
+          this.style.color = "#002855";
+        }
         renderDay();
       });
     }
