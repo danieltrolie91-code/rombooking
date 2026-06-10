@@ -30,13 +30,11 @@
     }
     .nav-btn:hover { background: #002855; color: white; }
 
-      .btn-icon {
+    .btn-icon {
       display: inline-block;
-
-      /* NYTT: Justerer høyden slik at pilen/ikonet ligger på linje med teksten */
       vertical-align: middle;
       position: relative;
-      top: -1px; /* Finjustering hvis pilen trengs å dyttes et ørlite hakk opp */
+      top: -1px;
     }
     .btn-icon.left { margin-right: 4px; }
     .btn-icon.right { margin-left: 4px; }
@@ -50,8 +48,7 @@
     .dropdown-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: white; min-width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; border: 1px solid #e2e8f0; z-index: 1000; padding: 6px 0; margin-top: 5px; }
     .dropdown-menu.show { display: block; }
     .dropdown-item { color: #0f172a; padding: 10px 16px; text-decoration: none; display: block; font-size: clamp(0.85rem, 1.5vw, 1rem); font-weight: 600; cursor: pointer; transition: background 0.15s; }
-    .dropdown-item:hover { background: #f1f5f9; color: #002855; }
-    .dropdown-item.active { background: #e6edf5; color: #002855; }
+    .dropdown-item:hover { background: #f1f5f9; color: #002855; } .dropdown-item.active { background: #e6edf5; color: #002855; }
 
     .clock-text { font-weight: 500; font-size: clamp(1rem, 2vw, 1.6rem); color: #002855; margin-right: clamp(6px, 1.2vw, 15px); }
     .main-content-layout { display: flex; flex-direction: row; flex-grow: 1; height: 100%; overflow: hidden; gap: 20px; align-items: stretch; }
@@ -69,25 +66,29 @@
     .card-duration { font-size: clamp(0.6rem, 1vw, 0.85rem); color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
     .title { font-size: clamp(0.75rem, 1.5vw, 1.25rem); font-weight: 700; color: #0f172a; line-height: 1.2; }
-    .title span.room { color: #002855; font-weight: 600; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 1px 4px; border-radius: 4px; font-size: clamp(0.7rem, 1.3vw, 1.05rem); margin-left: 4px; display: inline-block; }
+
+    /* ROOM-BOKS: Flyttet permanent ned på en helt egen linje under bookingnavnet */
+    .title span.room {
+      color: #002855;
+      font-weight: 600;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-size: clamp(0.7rem, 1.3vw, 1.05rem);
+      display: block;
+      margin-top: 6px;
+      width: fit-content;
+    }
 
     .status-msg { text-align: center; color: #64748b; font-size: clamp(0.85rem, 1.5vw, 1.1rem); margin: 40px 0; font-weight: 600; }
     .qr-side-column { display: flex; flex-direction: column; justify-content: center; align-items: center; width: clamp(75px, 8vw, 120px); flex-shrink: 0; text-align: center; gap: 8px; }
     .qr-text { font-size: clamp(0.65rem, 1vw, 0.85rem); font-weight: 700; color: #002855; line-height: 1.2; }
     .qr-box-img { padding: 4px; background: white; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px rgba(0,40,85,0.08); border-radius: 12px; width: 100%; height: auto; max-width: 80px; max-height: 80px; box-sizing: border-box; display: block; }
 
-    @media (max-width: 1250px) {
-      .qr-side-column { display: none !important; }
-    }
-    @media (max-width: 800px) {
-      #toggleFilter { display: none !important; }
-      .btn-icon { display: none !important; }
-    }
-    @media (max-width: 768px) {
-      body { padding: 4px; }
-      .time-row { flex-direction: column; gap: 6px; align-items: stretch; }
-      .time-label { align-self: flex-start; min-width: auto; }
-    }
+    @media (max-width: 1250px) { .qr-side-column { display: none !important; } }
+    @media (max-width: 800px) { #toggleFilter { display: none !important; } .btn-icon { display: none !important; } }
+    @media (max-width: 768px) { body { padding: 4px; } .time-row { flex-direction: column; gap: 6px; align-items: stretch; } .time-label { align-self: flex-start; min-width: auto; } }
   </style>
 </head>
 <body>
@@ -109,7 +110,7 @@
               <span id="dateDisplay">Laster dato...</span>
               <span class="menu-arrow">▼</span>
             </div>
-            <div class="dropdown-menu" id="dropdownMenu" style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%);">
+            <div class="dropdown-menu" id="dropdownMenu">
               <div class="dropdown-item" data-code="MO">Mo i Rana</div>
               <div class="dropdown-item" data-code="NES">Nesna</div>
               <div class="dropdown-item" data-code="BOD">Bodø</div>
@@ -145,26 +146,28 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbwjBfYHZbiJuM1lV_13tzgAxkj8g1Mgq0l470aHthRvLHx1yQ4-r0U7ua6hF4xf64vl/exec";
 
     var stedsNavn = { MO: "Mo i Rana", NES: "Nesna", BOD: "Bodø", LEV: "Levanger", NAM: "Namsos", STE: "Steinkjer", STJ: "Stjørdal", VES: "Vesterålen" };
-
     var mobilBilder = { MO: "mobil-qr.png", NES: "mobil-qr.png", BOD: "mobil-qr.png", LEV: "mobil-qr.png", NAM: "mobil-qr.png", STE: "mobil-qr.png", STJ: "mobil-qr.png", VES: "mobil-qr.png" };
     var mazemapBilder = { MO: "mazemap-qr.png", NES: "mazemap-qr.png", BOD: "mazemap-qr.png", LEV: "mazemap-qr.png", NAM: "mazemap-qr.png", STE: "mazemap-qr.png", STJ: "mazemap-qr.png", VES: "mazemap-qr.png" };
 
     var valgtSted = 'MO';
-    var allEvents = [], visningsDato = new Date(), scrollInterval = null, visKommune = false;
+    var allEvents = [];
+    var visningsDato = new Date();
+    var scrollInterval = null;
+    var visKommune = false;
 
-    function fmtTid(d) { return new Date(d).toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit', hour12: false }); }
+    function fmtTid(d) {
+      return new Date(d).toLocaleTimeString('no-NO', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
 
     window.onload = function() {
       var urlParams = new URLSearchParams(window.location.search);
       var urlSted = urlParams.get('sted');
-
       if (urlSted && stedsNavn[urlSted.toUpperCase()]) {
         valgtSted = urlSted.toUpperCase();
         localStorage.setItem('valgtStudiested', valgtSted);
       } else {
         valgtSted = localStorage.getItem('valgtStudiested') || 'MO';
       }
-
       startKlokke();
       oppdaterAktivtStedIMeny();
       oppdaterVisningAvQr();
@@ -179,7 +182,6 @@
       document.getElementById('status').style.display = 'block';
       document.getElementById('status').innerText = "Oppdaterer rombookinger for " + stedsNavn[valgtSted] + "...";
       document.getElementById('eventsContainer').innerHTML = '';
-
       var gammeltSkript = document.getElementById('jsonpScript');
       if (gammeltSkript) { gammeltSkript.remove(); }
 
@@ -197,21 +199,23 @@
 
     function startKlokke() {
       var oppdater = function() { document.getElementById('clockDisplay').innerText = fmtTid(new Date()); };
-      oppdater(); setInterval(oppdater, 1000);
+      oppdater();
+      setInterval(oppdater, 1000);
     }
 
-    var menuToggle = document.getElementById('menuToggle');
-    var dropdownMenu = document.getElementById('dropdownMenu');
-
-    menuToggle.addEventListener('click', function(e) {
+    document.getElementById('menuToggle').addEventListener('click', function(e) {
       e.stopPropagation();
-      menuToggle.classList.toggle('open');
-      dropdownMenu.classList.toggle('show');
+      this.classList.toggle('open');
+      document.getElementById('dropdownMenu').classList.toggle('show');
     });
 
     document.addEventListener('click', function() {
-      menuToggle.classList.remove('open');
-      dropdownMenu.classList.remove('show');
+      if(document.getElementById('menuToggle')) {
+        document.getElementById('menuToggle').classList.remove('open');
+      }
+      if(document.getElementById('dropdownMenu')) {
+        document.getElementById('dropdownMenu').classList.remove('show');
+      }
     });
 
     var items = document.querySelectorAll('.dropdown-item');
@@ -219,12 +223,10 @@
       items[i].addEventListener('click', function() {
         valgtSted = this.getAttribute('data-code');
         localStorage.setItem('valgtStudiested', valgtSted);
-
         if (window.history.pushState) {
           var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
           window.history.pushState({path:newurl}, '', newurl);
         }
-
         oppdaterAktivtStedIMeny();
         oppdaterVisningAvQr();
         lastData();
@@ -242,32 +244,31 @@
       }
     }
 
-    var filterBtn = document.getElementById('toggleFilter');
-    if (filterBtn) {
-      filterBtn.addEventListener('click', function() {
-        visKommune = !visKommune;
-        var iconSpan = document.getElementById('filterIcon');
-        var textSpan = document.getElementById('filterText');
-
-        if (visKommune) {
-          if(iconSpan) iconSpan.innerText = "📋";
-          if(textSpan) textSpan.innerText = "Enkel";
-          this.style.borderColor = "#00A3A6";
-          this.style.color = "#00A3A6";
-        }
-        else {
-          if(iconSpan) iconSpan.innerText = "🔍";
-          if(textSpan) textSpan.innerText = "Utvidet";
-          this.style.borderColor = "#002855";
-          this.style.color = "#002855";
-        }
-        renderDay();
-      });
-    }
+    document.getElementById('toggleFilter').addEventListener('click', function() {
+      visKommune = !visKommune;
+      var iconSpan = document.getElementById('filterIcon');
+      var textSpan = document.getElementById('filterText');
+      if (visKommune) {
+        if(iconSpan) iconSpan.innerText = "📋";
+        if(textSpan) textSpan.innerText = "Enkel";
+        this.style.borderColor = "#00A3A6";
+        this.style.color = "#00A3A6";
+      } else {
+        if(iconSpan) iconSpan.innerText = "🔍";
+        if(textSpan) textSpan.innerText = "Utvidet";
+        this.style.borderColor = "#002855";
+        this.style.color = "#002855";
+      }
+      renderDay();
+    });
 
     document.getElementById('prevDay').addEventListener('click', function() { changeDate(-1); });
     document.getElementById('nextDay').addEventListener('click', function() { changeDate(1); });
-    function changeDate(days) { visningsDato.setDate(visningsDato.getDate() + days); renderDay(); }
+
+    function changeDate(days) {
+      visningsDato.setDate(visningsDato.getDate() + days);
+      renderDay();
+    }
 
     function oppdaterVisningAvQr() {
       if (document.getElementById('mazemapQr') && mazemapBilder[valgtSted]) { document.getElementById('mazemapQr').src = mazemapBilder[valgtSted]; }
@@ -275,46 +276,88 @@
     }
 
     function renderDay() {
-      var container = document.getElementById('eventsContainer'); container.innerHTML = ''; if (scrollInterval) clearInterval(scrollInterval);
+      var container = document.getElementById('eventsContainer');
+      container.innerHTML = '';
+      if (scrollInterval) clearInterval(scrollInterval);
+
       var datoTekst = visningsDato.toLocaleDateString('no-NO', { weekday: 'long', month: 'short', day: 'numeric' });
       document.getElementById('dateDisplay').innerText = datoTekst + " - " + stedsNavn[valgtSted];
-      var targetYear = visningsDato.getFullYear(), targetMonth = visningsDato.getMonth(), targetDate = visningsDato.getDate();
+
+      var targetYear = visningsDato.getFullYear();
+      var targetMonth = visningsDato.getMonth();
+      var targetDate = visningsDato.getDate();
+
       var dagensAvtaler = allEvents.filter(function(ev) {
-        var d = new Date(ev.start); return d.getFullYear() === targetYear && d.getMonth() === targetMonth && d.getDate() === targetDate;
+        var d = new Date(ev.start);
+        return d.getFullYear() === targetYear && d.getMonth() === targetMonth && d.getDate() === targetDate;
       });
-      if (!visKommune) { dagensAvtaler = dagensAvtaler.filter(function(ev) { return !ev.isKommune; }); }
+
+      if (!visKommune) {
+        dagensAvtaler = dagensAvtaler.filter(function(ev) { return !ev.isKommune; });
+      }
+
       dagensAvtaler.sort(function(a, b) { return a.start - b.start; });
-      if (dagensAvtaler.length === 0) { container.innerHTML = '<div class="status-msg">Ingen registrerte bookinger på denne datoen.</div>'; return; }
+      if (dagensAvtaler.length === 0) {
+        container.innerHTML = '<div class="status-msg">Ingen registrerte bookinger på denne datoen.</div>';
+        return;
+      }
+
       var grupperteAvtaler = {};
       dagensAvtaler.forEach(function(ev) {
-        var startStr = "Kl. " + fmtTid(ev.start); if (!grupperteAvtaler[startStr]) { grupperteAvtaler[startStr] = []; } grupperteAvtaler[startStr].push(ev);
+        var startStr = "Kl. " + fmtTid(ev.start);
+        if (!grupperteAvtaler[startStr]) { grupperteAvtaler[startStr] = []; }
+        grupperteAvtaler[startStr].push(ev);
       });
+
       Object.keys(grupperteAvtaler).forEach(function(startTid) {
-        var avtalerILøkke = grupperteAvtaler[startTid], radElement = document.createElement('div'); radElement.className = 'time-row';
-        var tidsMerkelapp = document.createElement('div'); tidsMerkelapp.className = 'time-label'; tidsMerkelapp.innerText = startTid; radElement.appendChild(tidsMerkelapp);
-        var kortInnpakning = document.createElement('div'); kortInnpakning.className = 'cards-wrapper';
+        var avtalerILøkke = grupperteAvtaler[startTid];
+        var radElement = document.createElement('div');
+        radElement.className = 'time-row';
+
+        var tidsMerkelapp = document.createElement('div');
+        tidsMerkelapp.className = 'time-label';
+        tidsMerkelapp.innerText = startTid;
+        radElement.appendChild(tidsMerkelapp);
+
+        var kortInnpakning = document.createElement('div');
+        kortInnpakning.className = 'cards-wrapper';
+
         avtalerILøkke.forEach(function(ev) {
-          var kort = document.createElement('div'); kort.className = ev.isKommune ? 'event-card kommune-card' : 'event-card'; var txt = ev.title;
+          var kort = document.createElement('div');
+          kort.className = ev.isKommune ? 'event-card kommune-card' : 'event-card';
+          var txt = ev.title;
+
           if (txt.includes("(") && txt.endsWith(")")) {
-            var idx = txt.lastIndexOf("("), rm = txt.substring(idx + 1, txt.length - 1), clean = txt.substring(0, idx).trim();
+            var idx = txt.lastIndexOf("(");
+            var rm = txt.substring(idx + 1, txt.length - 1);
+            var clean = txt.substring(0, idx).trim();
             txt = clean + '<span class="room">' + rm + '</span>';
           }
+
           kort.innerHTML = '<div class="card-duration">Varighet til kl. ' + fmtTid(ev.end) + '</div><div class="title">' + txt + '</div>';
           kortInnpakning.appendChild(kort);
         });
-        radElement.appendChild(kortInnpakning); container.appendChild(radElement);
+        radElement.appendChild(kortInnpakning);
+        container.appendChild(radElement);
       });
       startAutoscroll();
     }
 
     function startAutoscroll() {
-      var felt = document.getElementById('scrollArea'); var container = document.getElementById('eventsContainer');
-      if (!felt || !container) return; felt.scrollTop = 0;
+      var felt = document.getElementById('scrollArea');
+      var container = document.getElementById('eventsContainer');
+      if (!felt || !container) return;
+      felt.scrollTop = 0;
+
       setTimeout(function() {
         scrollInterval = setInterval(function() {
-          var maksRulling = container.offsetHeight - felt.clientHeight; if (maksRulling <= 0) { clearInterval(scrollInterval); return; }
+          var maksRulling = container.offsetHeight - felt.clientHeight;
+          if (maksRulling <= 0) { clearInterval(scrollInterval); return; }
           felt.scrollTop += 1;
-          if (felt.scrollTop >= maksRulling) { clearInterval(scrollInterval); setTimeout(function() { startAutoscroll(); }, 4000); }
+          if (felt.scrollTop >= maksRulling) {
+            clearInterval(scrollInterval);
+            setTimeout(function() { startAutoscroll(); }, 4000);
+          }
         }, 40);
       }, 2000);
     }
