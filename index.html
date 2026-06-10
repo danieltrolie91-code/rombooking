@@ -130,7 +130,13 @@
       oppdaterAktivtStedIMeny();
       oppdaterVisningAvQr();
       lastData();
+
+      // Henter ferske data ved å laste siden på nytt hvert 30. minutt
+      setInterval(function() {
+        location.reload();
+      }, 1800000);
     };
+
 
     function lastData() {
       document.getElementById('status').style.display = 'block';
